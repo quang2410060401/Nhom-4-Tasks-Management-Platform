@@ -1,0 +1,6 @@
+tunnel: d5076c59-7a91-4eb4-b2ea-baaba7a5a90c
+
+ingress:
+  - hostname: tasks.websm.net
+    service: http://localhost:80
+  - service: http_status:404
