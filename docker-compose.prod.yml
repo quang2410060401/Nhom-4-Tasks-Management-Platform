@@ -1,0 +1,99 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    entrypoint: ["/bin/bash", "/scripts/mongo-entrypoint.sh"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:?MONGODB_ROOT_PASSWORD is required}
+      MONGODB_KEYFILE_CONTENT: ${MONGODB_KEYFILE_CONTENT:?MONGODB_KEYFILE_CONTENT is required}
+    volumes:
+      - mongo_data:/data/db
+      - ./docker/mongo:/scripts:ro
+    networks:
+      - app
+
+  mongo-init-replica:
+    image: mongo:7
+    restart: "no"
+    depends_on:
+      - mongo
+    environment:
+      MONGODB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:?MONGODB_ROOT_PASSWORD is required}
+    networks:
+      - app
+    entrypoint:
+      - bash
+      - -lc
+      - >
+        until mongosh "mongodb://$${MONGODB_ROOT_USERNAME}:$${MONGODB_ROOT_PASSWORD}@mongo:27017/admin?authSource=admin" --quiet --eval "db.adminCommand('ping').ok" >/dev/null 2>&1; do
+          sleep 2;
+        done;
+        mongosh "mongodb://$${MONGODB_ROOT_USERNAME}:$${MONGODB_ROOT_PASSWORD}@mongo:27017/admin?authSource=admin" --quiet --eval "try { rs.status().ok } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}) }"
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - mongo-init-replica
+    environment:
+      NODE_ENV: production
+      PORT: 6868
+      APP_BASE_URL: ${APP_BASE_URL:?APP_BASE_URL is required}
+      FRONTEND_URL: ${FRONTEND_URL:?FRONTEND_URL is required}
+      FRONTEND_URLS: ${FRONTEND_URLS:-${FRONTEND_URL}}
+      ALLOW_VERCEL_PREVIEW_ORIGINS: ${ALLOW_VERCEL_PREVIEW_ORIGINS:-false}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      ENABLE_INTERNAL_CRON: ${ENABLE_INTERNAL_CRON:-true}
+      CRON_SECRET: ${CRON_SECRET:-}
+      MONGODB_URI: ${MONGODB_URI:?MONGODB_URI is required}
+      MONGODB_SERVER_SELECTION_TIMEOUT_MS: ${MONGODB_SERVER_SELECTION_TIMEOUT_MS:-10000}
+      MONGODB_CONNECT_TIMEOUT_MS: ${MONGODB_CONNECT_TIMEOUT_MS:-10000}
+      MONGODB_SOCKET_TIMEOUT_MS: ${MONGODB_SOCKET_TIMEOUT_MS:-15000}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-3600s}
+      FILE_STORAGE_DRIVER: ${FILE_STORAGE_DRIVER:-local}
+      BLOB_ACCESS: ${BLOB_ACCESS:-public}
+      BLOB_READ_WRITE_TOKEN: ${BLOB_READ_WRITE_TOKEN:-}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-Tasks Management Platform}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+    ports:
+      - "127.0.0.1:${BE_PORT:-6868}:6868"
+    volumes:
+      - backend_uploads:/app/apps/backend/.runtime/task-uploads
+    networks:
+      - app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        VITE_APP_NAME: ${VITE_APP_NAME:-Tasks Management Platform}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:${FE_PORT:-5173}:80"
+    networks:
+      - app
+
+networks:
+  app:
+
+volumes:
+  mongo_data:
+  backend_uploads:

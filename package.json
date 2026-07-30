@@ -1,0 +1,26 @@
+{
+    "name": "tasks-management-platform",
+    "private": true,
+    "packageManager": "pnpm@9.15.9",
+    "scripts": {
+        "dev": "concurrently -n backend,frontend -c blue,green \"pnpm dev:be\" \"pnpm dev:fe\"",
+        "dev:all": "concurrently -n backend,frontend -c blue,green \"pnpm dev:be\" \"pnpm dev:fe\"",
+        "dev:be": "pnpm --filter backend dev",
+        "dev:fe": "pnpm --filter frontend dev",
+        "build": "pnpm -r build",
+        "lint": "pnpm -r lint",
+        "format": "pnpm -r format",
+        "docker:up": "docker compose up -d",
+        "docker:down": "docker compose down"
+    },
+    "devDependencies": {
+        "concurrently": "^9.0.0"
+    },
+    "pnpm": {
+        "peerDependencyRules": {
+            "allowedVersions": {
+                "class-validator": ">=0.13.0"
+            }
+        }
+    }
+}
