@@ -64,8 +64,8 @@ Trong local environment hiện tại:
 
 - Backend README: [apps/backend/README.md](./apps/backend/README.md)
 - Frontend README: [apps/frontend/README.md](./apps/frontend/README.md)
-- API spec: [.github/docs/api-specification.md](./.github/docs/api-specification.md)
-- System flows: [.github/docs/system-flows.md](./.github/docs/system-flows.md)
+- API spec: [docs/api-specification.md](./docs/api-specification.md)
+- System flows: [docs/system-flows.md](./docs/system-flows.md)
 
 ## 4. Start project ở local bằng Docker
 
