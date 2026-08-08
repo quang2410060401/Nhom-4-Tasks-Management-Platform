@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type TaskLabelDocument = HydratedDocument<TaskLabel>;
 
@@ -16,11 +16,21 @@ export type TaskLabelDocument = HydratedDocument<TaskLabel>;
 @Schema({ collection: 'task_labels', timestamps: false })
 export class TaskLabel {
   /** Tham chiếu đến task. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Task', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Task',
+    index: true,
+  })
   taskId!: Types.ObjectId;
 
   /** Tham chiếu đến label (thuộc cùng group với task). */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Label', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Label',
+    index: true,
+  })
   labelId!: Types.ObjectId;
 }
 

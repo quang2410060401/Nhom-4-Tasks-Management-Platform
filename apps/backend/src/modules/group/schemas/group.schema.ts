@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type GroupDocument = HydratedDocument<Group>;
 
@@ -31,7 +31,12 @@ export class Group {
   endDate!: Date | null;
 
   /** Tham chiếu đến user đã tạo nhóm — không thay đổi sau khi tạo. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'User', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'User',
+    index: true,
+  })
   ownerId!: Types.ObjectId;
 }
 

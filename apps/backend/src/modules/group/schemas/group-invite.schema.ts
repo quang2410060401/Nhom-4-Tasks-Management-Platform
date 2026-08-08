@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 import { GroupRole } from '../enums/group-role.enum';
 import { InviteStatus } from '../enums/invite-status.enum';
 
@@ -14,7 +14,12 @@ export type GroupInviteDocument = HydratedDocument<GroupInvite>;
 @Schema({ collection: 'group_invites', timestamps: true })
 export class GroupInvite {
   /** Nhóm mời thành viên. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Group', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Group',
+    index: true,
+  })
   groupId!: Types.ObjectId;
 
   /** Email của người được mời — dùng để xác nhận khi chấp nhận lời mời. */
