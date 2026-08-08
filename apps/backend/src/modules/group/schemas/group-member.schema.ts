@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 import { GroupRole } from '../enums/group-role.enum';
 
 export type GroupMemberDocument = HydratedDocument<GroupMember>;
@@ -12,11 +12,21 @@ export type GroupMemberDocument = HydratedDocument<GroupMember>;
 @Schema({ collection: 'group_members', timestamps: true })
 export class GroupMember {
   /** Tham chiếu đến nhóm. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Group', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Group',
+    index: true,
+  })
   groupId!: Types.ObjectId;
 
   /** Tham chiếu đến user thành viên. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'User', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'User',
+    index: true,
+  })
   userId!: Types.ObjectId;
 
   /** Vai trò của thành viên trong nhóm: owner hoặc member. */

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type StatusDocument = HydratedDocument<Status>;
 
@@ -13,7 +13,12 @@ export type StatusDocument = HydratedDocument<Status>;
 @Schema({ collection: 'statuses', timestamps: true })
 export class Status {
   /** Nhóm sở hữu status này. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Group', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Group',
+    index: true,
+  })
   groupId!: Types.ObjectId;
 
   /** Tên hiển thị, ví dụ: "Todo", "Đang làm". */

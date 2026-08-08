@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type LabelDocument = HydratedDocument<Label>;
 
@@ -13,7 +13,12 @@ export type LabelDocument = HydratedDocument<Label>;
 @Schema({ collection: 'labels', timestamps: true })
 export class Label {
   /** Nhóm sở hữu label này. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Group', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Group',
+    index: true,
+  })
   groupId!: Types.ObjectId;
 
   /** Tên nhãn, ví dụ: "Bug", "Feature", "Khẩn cấp". */

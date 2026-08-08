@@ -1,17 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type TaskAttachmentDocument = HydratedDocument<TaskAttachment>;
 
 @Schema({ collection: 'task_attachments', timestamps: true })
 export class TaskAttachment {
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Task', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Task',
+    index: true,
+  })
   taskId!: Types.ObjectId;
 
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Group', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Group',
+    index: true,
+  })
   groupId!: Types.ObjectId;
 
-  @Prop({ required: true, type: Types.ObjectId, ref: 'User', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'User',
+    index: true,
+  })
   uploadedBy!: Types.ObjectId;
 
   @Prop({ required: true, trim: true, maxlength: 255 })

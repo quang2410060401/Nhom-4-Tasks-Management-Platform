@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type TaskDocument = HydratedDocument<Task>;
 
@@ -26,25 +26,35 @@ export class Task {
   description!: string | null;
 
   /** Nhóm sở hữu task này. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Group', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'Group',
+    index: true,
+  })
   groupId!: Types.ObjectId;
 
   /**
    * Trạng thái hiện tại của task (cột Kanban).
    * Phải thuộc cùng groupId — validate ở tầng service.
    */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Status' })
+  @Prop({ required: true, type: SchemaTypes.ObjectId, ref: 'Status' })
   statusId!: Types.ObjectId;
 
   /**
    * Người được giao việc — nullable.
    * Bị reset thành null khi thành viên đó bị xóa khỏi group.
    */
-  @Prop({ type: Types.ObjectId, ref: 'User', default: null, index: true })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', default: null, index: true })
   assigneeId!: Types.ObjectId | null;
 
   /** Người tạo task — gán tự động từ JWT, không sửa sau khi tạo. */
-  @Prop({ required: true, type: Types.ObjectId, ref: 'User', index: true })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'User',
+    index: true,
+  })
   creatorId!: Types.ObjectId;
 
   /**
